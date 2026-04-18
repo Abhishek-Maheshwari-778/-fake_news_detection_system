@@ -15,23 +15,40 @@ import time
 
 def get_new_news_from_api_and_update():
     """Gets news from the guardian news using it's API"""
-    news_data = requests.get("https://content.guardianapis.com/search?api-key=e705adff-ca49-414e-89e2-7edede919e2e")
-    news_data = news_data.json()
+    try:
+        response = requests.get("https://content.guardianapis.com/search?api-key=e705adff-ca49-414e-89e2-7edede919e2e", timeout=10)
+        if response.status_code != 200:
+            print(f"Error fetching news: Received status code {response.status_code}")
+            return
+        
+        news_data = response.json()
+        
+        if "response" not in news_data or "results" not in news_data["response"]:
+            print("Error: 'response' or 'results' not found in API response")
+            return
 
-    news_titles = [article["webTitle"] for article in news_data["response"]["results"]]
-    news_publication_dates = [article["webPublicationDate"] for article in news_data["response"]["results"]]
-    news_categories = []
+        results = news_data["response"]["results"]
+        if not results:
+            print("No new news found in API response")
+            return
 
-    for article in news_data["response"]["results"]:
-        try:
-            news_categories.append(article["pillarName"])
-        except KeyError:
-            news_categories.append("Undefined")
-    # news_categories = [article["pillarName"] for article in news_data["response"]["results"]]
-    section_id = [article["sectionId"] for article in news_data["response"]["results"]]
-    section_name = [article["sectionName"] for article in news_data["response"]["results"]]
-    type = [article["type"] for article in news_data["response"]["results"]]
-    web_url = [article["webUrl"] for article in news_data["response"]["results"]]
+        news_titles = [article.get("webTitle", "No Title") for article in results]
+        news_publication_dates = [article.get("webPublicationDate", "") for article in results]
+        news_categories = []
+
+        for article in results:
+            try:
+                news_categories.append(article.get("pillarName", "Undefined"))
+            except KeyError:
+                news_categories.append("Undefined")
+        
+        section_id = [article.get("sectionId", "unknown") for article in results]
+        section_name = [article.get("sectionName", "General") for article in results]
+        type_list = [article.get("type", "article") for article in results]
+        web_url = [article.get("webUrl", "#") for article in results]
+    except Exception as e:
+        print(f"Exception during news fetch: {e}")
+        return
 
     nb_model, vect_model = load_models()
 
@@ -42,7 +59,10 @@ def get_new_news_from_api_and_update():
             return "None"
         web_content = r.content
         soup = BeautifulSoup(web_content, 'html.parser')
-        imgs = soup.find_all('article')[0].find_all('img', class_='dcr-evn1e9')
+        article_tags = soup.find_all('article')
+        if not article_tags:
+            return "None"
+        imgs = article_tags[0].find_all('img', class_='dcr-evn1e9')
         img_urls = []
         for img in imgs:
             src = img.get("src")
@@ -58,7 +78,7 @@ def get_new_news_from_api_and_update():
             category_ = news_categories[i]
             section_id_ = section_id[i]
             section_name_ = section_name[i]
-            type_ = type[i]
+            type_ = type_list[i]
             web_url_ = web_url[i]
             
 

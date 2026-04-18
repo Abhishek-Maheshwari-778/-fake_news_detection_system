@@ -77,7 +77,7 @@ function NewsQuiz() {
                     checked={selectedAnswer === 'True'}
                     onChange={handleOptionChange}
                   />
-                  <label className="label" for="a">
+                  <label className="label" htmlFor="a">
                     <div className="indicator"></div>
                     <span className="text">Real News</span>
                   </label>
@@ -92,7 +92,7 @@ function NewsQuiz() {
                     checked={selectedAnswer === 'False'}
                     onChange={handleOptionChange}
                   />
-                  <label className="label" for="b">
+                  <label className="label" htmlFor="b">
                     <div className="indicator"></div>
                     <span className="text">Fake News</span>
                   </label>
