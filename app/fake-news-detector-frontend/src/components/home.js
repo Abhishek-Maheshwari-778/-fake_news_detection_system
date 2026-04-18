@@ -5,7 +5,7 @@ import { Check2, X } from 'react-bootstrap-icons';
 import Axios from 'axios';
 
 function Home() {
-  document.title = 'News Guardian | Home';
+  document.title = 'Fake News Detection System | Home';
   let stage = 1;
 
   const [liveNewsData, setLiveNewsData] = useState([]);

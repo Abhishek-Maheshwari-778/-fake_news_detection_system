@@ -15,8 +15,8 @@ function Header(props) {
                     <Container>
                         <LinkContainer to='/'>
                             <Navbar.Brand href="/">
-                                <img src={process.env.PUBLIC_URL + '/logo.png'} height={27} className='logo-image' alt="Logo"></img>
-                                <span style={{fontWeight: 600, color: '#136996'}}>News</span> <span style={{color: '#48a2f8'}}>Guardian</span>
+                                <img src={process.env.PUBLIC_URL + '/logo.png'} height={35} className='logo-image' alt="Logo"></img>
+                                <span style={{fontWeight: 600, color: '#136996'}}>Fake News</span> <span style={{color: '#48a2f8'}}>Detection System</span>
                             </Navbar.Brand>
                         </LinkContainer>
                         <Navbar.Toggle aria-controls="hearder-navbar" />

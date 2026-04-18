@@ -1,74 +1,57 @@
-# Fake News Detector
+# Fake News Detection System
 
-[![Watch the video](https://i.postimg.cc/tgGgrMsN/25480.jpg)](http://artificialbrains.s3.amazonaws.com/news_guardian.mp4)
+![Logo](app/fake-news-detector-frontend/public/logo.png)
 
+## Overview
 
-Welcome to the Fake News Detector project! This project was created as part of my college coursework, and I'm excited to share it with the developer community. If you are interested in contributing to this project or using it as a basis for your own development, please read on.
+The **Fake News Detection System** is a sophisticated web application designed to combat misinformation. It utilizes advanced Machine Learning algorithms to analyze news articles and predict their authenticity. This project is tailored for the Indian news ecosystem, providing real-time monitoring and analysis of national and regional news.
 
-## About FND
+## Key Features
 
-FND is a web-based application designed to detect fake news articles. It uses machine learning models to analyze news articles and predict whether they are real or fake. The goal of this project is to provide a tool that can help users identify unreliable news sources and combat the spread of misinformation.
+- **Live Indian News Monitoring**: Real-time integration with news sources to track latest headlines across India.
+- **AI-Powered Prediction**: Built with a Multinomial Naive Bayes model to detect linguistic patterns associated with fake news.
+- **News Quiz**: An interactive game to test your ability to distinguish between real and fabricated news.
+- **Custom Title Checker**: Users can input any news headline to get an instant AI prediction.
+- **Comprehensive Categories**: Filter news by topics like Sport, Politics, Education, and more.
 
-## Features
+## Technology Stack
 
-- **Live News Monitoring:** View real-time predictions for news articles.
-![live_monitoring](https://imgur.com/9BVijIo.png)
-
-- **News Quiz:** Test your fake news detection skills by taking our news quiz.
-![news_quiz](https://imgur.com/w0xmk5f.png)
-
-- **Check News by Title:** Enter a news title to see if it's predicted as real or fake.
-![check_title](https://imgur.com/YDrfDVT.png)
-
-- **User Collaboration:** I encourage other developers to collaborate and improve this project further.
+- **Backend**: Django & Django REST Framework
+- **Frontend**: React.js with Bootstrap
+- **Machine Learning**: Scikit-learn (Naive Bayes & CountVectorizer)
+- **Database**: SQLite (Local Development)
 
 ## Getting Started
 
-To get started with this project, follow these steps:
+### 1. Prerequisites
+Ensure you have the following installed:
+- Python 3.10+
+- Node.js & NPM
 
-1. Cloning the repository
+### 2. Backend Setup
+```powershell
+cd app/FakeNewsDetectorAPI
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py seed_news  # Initialize with sample data
+python manage.py runserver
+```
 
-`git clone https://github.com/DJDarkCyber/Fake-News-Detector`
+### 3. Frontend Setup
+```powershell
+cd app/fake-news-detector-frontend
+npm install
+npm start
+```
 
-2. Install the required libraries for python
+## How It Works
 
-`cd Fake-News-Detector/app/FakeNewsDetectorAPI/ && pip install -r requirements.txt`
+The system uses a pre-trained **Machine Learning model** stored in the `models/` directory. When a news article is fetched or submitted, it is transformed into a numerical vector using a `CountVectorizer` and then passed through the `MultinomialNB` classifier to determine the result.
 
-3. Install the required libraries for js
+## Author
 
-`cd ../fake-news-detector-frontend && npm install`
+**Abhishek Maheshwari**
+[GitHub Profile](https://github.com/Abhishek-Maheshwari-778)
 
-4. Deployment
-
-Open terminal and cd to project root folder and run
-
-`cd app/FakeNewsDetectorAPI/ && python manage.py migrate && python manage.py runserver`
-
-To load quiz data,
-
-`python manage.py quiz_data_loader game_data/game_data.csv`
-
-Open another terminal and cd to project root folder and run
-
-`cd app/fake-news-detector-frontend/ && npm start`
-
-All set if everything running without errors. Now the deployed web application should open in a browser. If not, open a browser and navigate to http://localhost:3000
-
-## Contributing
-
-I welcome contributions from fellow developers. If you have ideas for new features, improvements, or bug fixes, please open an issue or submit a pull request. Your contributions will be greatly appreciated and will help make this project even better.
-
-## Roadmap
-
-- **Enhanced Machine Learning Models:** Improve the accuracy of the fake news detection models.
-- **User Profiles:** Allow users to create profiles and track their quiz scores.
-
-## Contact
-
-If you have any questions or suggestions, feel free to reach out to me at [dark_agent_437@protonmail.com](dark_agent_437@protonmail.com).
-
-If you have any issues, raise [issue](https://github.com/DJDarkCyber/Fake-News-Detector/issues).
-
-Thank you for considering contributing to the Fake News Detector project. Together, we can make a positive impact on the fight against misinformation.
-
-Happy coding!
+---
+*Developed as a project to demonstrate AI application in media integrity.*

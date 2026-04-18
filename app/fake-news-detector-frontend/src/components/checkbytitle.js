@@ -8,7 +8,7 @@ import { Check2, X } from 'react-bootstrap-icons';
 
 
 function CheckByTitle() {
-  document.title = 'News Guardian | Check news by title';
+  document.title = 'Fake News Detection System | Check news by title';
   let stage = 2;
   const [inputNewsTitle, setNewsTitle] = useState('');
   const [predictedValue, setPredictedValue] = useState('');
