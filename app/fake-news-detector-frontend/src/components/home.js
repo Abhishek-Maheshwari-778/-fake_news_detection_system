@@ -9,323 +9,93 @@ function Home() {
   let stage = 1;
 
   const [liveNewsData, setLiveNewsData] = useState([]);
-  const [mustSeeNews, setMustSeeNews] = useState([]);
-  const [allNews, setAllNews] = useState([]);
-
-  const categories = ['Sport', 'Lifestyle', 'Arts', 'News'];
 
   // Function to fetch live news data
   const fetchLiveNewsData = () => {
     Axios.get('http://127.0.0.1:8000/api/live/')
       .then((response) => {
         setLiveNewsData(response.data);
-        console.log(response.data);
       })
       .catch((error) => {
         console.error('Error', error);
       });
-    
-    Axios.get('http://127.0.0.1:8000/api/category/News/')
-    .then((response) => {
-      setMustSeeNews(response.data);
-      console.log(response.data);
-    })
-    .catch((error) => {
-      console.error('Error', error);
-    });
-
-    const fetchPromises = categories.map((category) => {
-      return Axios.get(`http://127.0.0.1:8000/api/category/${category}/`)
-        .then((response) => {
-          if (response.data.length > 0) {
-            return response.data[0]; // Return the news data
-          }
-        })
-        .catch((error) => {
-          console.error('Error', error);
-        });
-    });
-    
-    // Use Promise.all to handle all promises
-    Promise.all(fetchPromises)
-      .then((newsData) => {
-        // Filter out undefined values (failed requests)
-        const filteredNewsData = newsData.filter((data) => data !== undefined);
-        setAllNews(filteredNewsData);
-        console.log('All news fetched and added.');
-      })
-      .catch((error) => {
-        console.error('Error', error);
-      });    
   };
 
   // Fetch initial live news data on component mount
   useEffect(() => {
     fetchLiveNewsData();
-
     const intervalId = setInterval(() => {
       fetchLiveNewsData();
-
     }, 10000);
-
     return () => clearInterval(intervalId);
   }, []);
-
-  let newsData = [];
-  newsData = liveNewsData;
 
   return (
     <>
       <Header activeContainer={stage} />
-      <Container className="home-container">
-        <div className="live-news-container-header">
-          <img src={process.env.PUBLIC_URL + '/live.gif'} height={30} className="logo-image" alt="Live News" />
+      <Container className="home-container" style={{marginTop: '30px'}}>
+        <div className="live-news-container-header" style={{display: 'flex', alignItems: 'center', marginBottom: '20px'}}>
+          <img src={process.env.PUBLIC_URL + '/live.gif'} height={30} alt="Live News" />
+          <h3 className="heading-word" style={{margin: '0 0 0 15px', color: '#136996'}}>Latest News Analysis</h3>
         </div>
-        { liveNewsData.length >= 10 ? (
-          <Container className='new-news-container'>
-            <Row className='news-row'>
-              <Col xs={12} md={8}>
-                <Row className='nr-fkmwq'>
-                  <div className='div-oakpq'>
-                    <Col xs={6} md={4} className='cl-ksmao'>
-                      <h4 className='h-fowjs'>{liveNewsData[0].title}</h4>
+        <hr />
+
+        <Container className='new-news-container'>
+          { liveNewsData.length > 0 ? (
+            liveNewsData.map((news, index) => (
+              <div key={index} className="simple-news-card" style={{
+                marginBottom: '20px', 
+                padding: '20px', 
+                border: '1px solid #e0e0e0', 
+                borderLeft: news.prediction ? '6px solid #28a745' : '6px solid #dc3545',
+                borderRadius: '10px',
+                backgroundColor: '#ffffff',
+                boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+                transition: 'transform 0.2s'
+              }}>
+                <Row align="center">
+                  <Col md={news.img_url !== 'None' ? 9 : 12}>
+                    <h4 style={{color: '#136996', fontWeight: '800', marginBottom: '10px'}}>{news.title}</h4>
+                    <div style={{color: '#777', fontSize: '0.85rem', marginBottom: '15px'}}>
+                      <span style={{marginRight: '15px'}}>🕒 {new Date(news.publication_date).toLocaleString()}</span>
+                      <span>🏷️ {news.news_category}</span>
+                    </div>
+                    <div className='prediction-result' style={{
+                        padding: '10px 15px',
+                        borderRadius: '6px',
+                        display: 'inline-block',
+                        backgroundColor: news.prediction ? '#f0fff4' : '#fff5f5',
+                        border: news.prediction ? '1px solid #c6f6d5' : '1px solid #fed7d7'
+                    }}>
+                      { news.prediction === true ? 
+                        <span style={{color: '#28a745', fontWeight: 'bold'}}><Check2 /> Predicted as Real News</span> : 
+                        <span style={{color: '#dc3545', fontWeight: 'bold'}}><X /> Predicted as Fake News</span>
+                      }
+                    </div>
+                  </Col>
+                  { news.img_url !== 'None' && (
+                    <Col md={3} style={{textAlign: 'right'}}>
+                        <img src={news.img_url} style={{maxWidth: '100%', borderRadius: '8px', objectFit: 'cover'}} alt="News" />
                     </Col>
-                    { liveNewsData[0].img_url === 'None' ? 
-                      null :
-                        (
-                          <Col>
-                            <img src={liveNewsData[0].img_url}/>
-                          </Col>
-                        )
-                    }
-                  </div>
-                  <div className='div-kjpql'>
-                    <div>
-                      { new Date(liveNewsData[0].publication_date).getDay()}/{new Date(liveNewsData[0].publication_date).getMonth()}/{new Date(liveNewsData[0].publication_date).getFullYear()} {new Date(liveNewsData[0].publication_date).getHours()}:{new Date(liveNewsData[0].publication_date).getMinutes() }
-                      
-                    </div>
-                    <div className='div-kpqsa'>
-
-                      { liveNewsData[0].prediction === true ? 
-                        <div className='real-news-prediction'>
-                          <Check2 /> Predicted as Real News
-                        </div> : 
-                        <div className='fake-news-prediction'>
-                          <X /> Predicted as Fake News
-                        </div>
-                      }
-
-                    </div>
-                  </div>
+                  )}
                 </Row>
-              </Col>
-              <Col>
-                <div>
-                  <div className='div-ipsdf'>
-                    { liveNewsData[1].img_url === 'None' ? null : (
-                      <Row>
-                        <img src={liveNewsData[1].img_url} width={500} height={200}></img>
-                        </Row>
-                    ) }
-                    <Row>
-                        <h5>{liveNewsData[1].title}</h5>
-                    </Row>
-                  </div>
-                  <div className='div-kjpql'>
-                    <div>
-                      { new Date(liveNewsData[1].publication_date).getDay()}/{new Date(liveNewsData[1].publication_date).getMonth()}/{new Date(liveNewsData[1].publication_date).getFullYear()} {new Date(liveNewsData[1].publication_date).getHours()}:{new Date(liveNewsData[1].publication_date).getMinutes() }
-                    </div>
-                    <div className='div-kpqsa'>
-                      { liveNewsData[1].prediction === true ? 
-                          <div className='real-news-prediction'>
-                            <Check2 /> Predicted as Real News
-                          </div> : 
-                          <div className='fake-news-prediction'>
-                            <X /> Predicted as Fake News
-                          </div>
-                      }
-                    </div>
-                  </div>
+                <div style={{marginTop: '15px', borderTop: '1px solid #eee', paddingTop: '10px', textAlign: 'right'}}>
+                  <a href={news.web_url} target="_blank" rel="noreferrer" style={{
+                      color: '#48a2f8', 
+                      fontSize: '0.9rem', 
+                      textDecoration: 'none',
+                      fontWeight: '500'
+                    }}>Verify on official source →</a>
                 </div>
-              </Col>
-            </Row>
-            <hr />
-            
-            <Row className="news-row-2">
-              {liveNewsData.slice(2, 6).map((news, index) => (
-                <Col sm key={index}>
-                  <div className="div-olapq">
-                    {news.img_url !== 'None' && (
-                      <Row>
-                        <img src={news.img_url} width={300} height={150} alt={`News ${index + 2} Image`} />
-                      </Row>
-                    )}
-                    <Row>
-                      <h5>{news.title}</h5>
-                    </Row>
-                  </div>
-                  <div className="div-kjpql">
-                    <div>
-                      {`${new Date(news.publication_date).getDay()}/${new Date(news.publication_date).getMonth()}/${new Date(news.publication_date).getFullYear()} ${new Date(news.publication_date).getHours()}:${new Date(news.publication_date).getMinutes()}`}
-                    </div>
-                    <div className="div-kpqsa">
-                      {news.prediction ? (
-                        <div className="real-news-prediction">
-                          <Check2 /> Predicted as Real News
-                        </div>
-                      ) : (
-                        <div className="fake-news-prediction">
-                          <X /> Predicted as Fake News
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </Col>
-              ))}
-            </Row>
-
-            <hr />
-
-            <Row className="news-row-3">
-              {liveNewsData.slice(6, 10).map((news, index) => (
-                <Col sm key={index}>
-                  <div className="div-olapq">
-                    {news.img_url !== 'None' && (
-                      <Row>
-                        <img src={news.img_url} width={300} height={150} alt={`News ${index + 6} Image`} />
-                      </Row>
-                    )}
-                    <Row>
-                      <h5>{news.title}</h5>
-                    </Row>
-                  </div>
-                  <div className="div-kjpql">
-                    <div>
-                      {`${new Date(news.publication_date).getDay()}/${new Date(news.publication_date).getMonth()}/${new Date(news.publication_date).getFullYear()} ${new Date(news.publication_date).getHours()}:${new Date(news.publication_date).getMinutes()}`}
-                    </div>
-                    <div className="div-kpqsa">
-                      {news.prediction ? (
-                        <div className="real-news-prediction">
-                          <Check2 /> Predicted as Real News
-                        </div>
-                      ) : (
-                        <div className="fake-news-prediction">
-                          <X /> Predicted as Fake News
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </Col>
-              ))}
-            </Row>
-
-          </Container>
-          )
-          : 
-          "Not enough data to display :("
-        }
-
-        <div className='heading-title'>
-          <h3 className='heading-word'>Must See</h3>
-          <hr></hr>
-        </div>
-
-        {
-          mustSeeNews.length >= 4 ? (
-            <Container>
-              <Row>
-                {mustSeeNews.slice(0, 4).map((news, index) => (
-                  <Col sm key={index}>
-                    <div className="div-olapq">
-                      {news.img_url !== "None" ? (
-                        <Row>
-                          <img src={news.img_url} width={300} height={150} alt={`Must-See News ${index} Image`} />
-                        </Row>
-                      ) : null}
-                      <Row>
-                        <h5>{news.title}</h5>
-                      </Row>
-                    </div>
-                    <div className="div-kjpql">
-                      <div>
-                        {`${new Date(news.publication_date).getDay()}/${new Date(news.publication_date).getMonth()}/${new Date(news.publication_date).getFullYear()} ${new Date(news.publication_date).getHours()}:${new Date(news.publication_date).getMinutes()}`}
-                      </div>
-                      <div className="div-kpqsa">
-                        {news.prediction ? (
-                          <div className="real-news-prediction">
-                            <Check2 /> Predicted as Real News
-                          </div>
-                        ) : (
-                          <div className="fake-news-prediction">
-                            <X /> Predicted as Fake News
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </Col>
-                ))}
-              </Row>
-            </Container>
+              </div>
+            ))
           ) : (
-            "Not enough data to display"
-          )
-        }
-
-        <div className='heading-title'>
-          <h3 className='heading-word'>All news</h3>
-          <hr></hr>
-        </div>
-
-        <Container>
-          {allNews.length >= 4 ? (
-            <Container>
-              <Row>
-                {allNews.slice(0, 4).map((news, index) => (
-                  <Col sm key={index}>
-                    <div className="div-olapq">
-                      {news.img_url !== "None" ? (
-                        <Row>
-                          <img
-                            src={news.img_url}
-                            width={300}
-                            height={150}
-                            alt={`All News ${index} Image`}
-                          />
-                        </Row>
-                      ) : null}
-                      <Row>
-                        <h5>{news.title}</h5>
-                      </Row>
-                    </div>
-                    <div className="div-kjpql">
-                      <div>
-                        {`${new Date(news.publication_date).getDay()}/${
-                          new Date(news.publication_date).getMonth()
-                        }/${new Date(news.publication_date).getFullYear()} ${new Date(
-                          news.publication_date
-                        ).getHours()}:${new Date(news.publication_date).getMinutes()}`}
-                      </div>
-                      <div className="div-kpqsa">
-                        {news.prediction ? (
-                          <div className="real-news-prediction">
-                            <Check2 /> Predicted as Real News
-                          </div>
-                        ) : (
-                          <div className="fake-news-prediction">
-                            <X /> Predicted as Fake News
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </Col>
-                ))}
-              </Row>
-            </Container>
-          ) : (
-            "Not enough data to display"
+            <div style={{textAlign: 'center', padding: '100px 20px', backgroundColor: '#f9f9f9', borderRadius: '15px'}}>
+              <h4 style={{color: '#999'}}>No news analysis available.</h4>
+              <p style={{color: '#bbb'}}>The AI system is currently searching for new headlines to examine.</p>
+            </div>
           )}
         </Container>
-
       </Container>
     </>
   );
